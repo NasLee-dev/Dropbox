@@ -1,4 +1,7 @@
-import { IconButton } from "@material-tailwind/react";
+import { IconButton, Spinner } from "@material-tailwind/react";
+import { useMutation } from "@tanstack/react-query";
+import { deleteFile } from "actions/storageActions";
+import { queryClient } from "config/ReactQueryClientProvider";
 import { getImageUrl } from "utils/supabase/storage";
 
 export default function DropboxImage({
@@ -6,6 +9,15 @@ export default function DropboxImage({
 }: {
   file: any
 }) {
+  const deleteFileMutation = useMutation({
+    mutationFn: deleteFile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["images"],
+      })
+    }
+  })
+
   return (
     <div className="relative w-full flex flex-col p-4 border-gray-100 rounded-2xl shadow-md gap-2">
       {/* image */}
@@ -23,12 +35,23 @@ export default function DropboxImage({
       </div>
       <div className="absolute top-4 right-4">
         <IconButton
-          onClick={() => {}}
+          onClick={() => {
+            deleteFileMutation.mutate(file.name)
+          }}
           color="red"
         >
-          <i 
-            className="fas fa-trash"
-          />
+          {
+            deleteFileMutation.isPending ? (
+              <Spinner />
+            )
+            :
+            (
+              <i 
+                className="fas fa-trash"
+              />
+
+            )
+          }
         </IconButton>
       </div>
     </div>

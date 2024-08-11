@@ -11,7 +11,7 @@ export default function DropboxImageList({
   searchInput: string
 }) {
   const searchInputQuery = useQuery({
-    queryKey: ["searchInput", searchInput],
+    queryKey: ["images", searchInput],
     queryFn: () => searchFiles(searchInput),
   });
   return (
